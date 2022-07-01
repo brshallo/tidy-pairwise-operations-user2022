@@ -1,0 +1,90 @@
+Draft of rough script -- see "notes" in .pptx for closer proxy to what was delivered at User!
+
+PAIRWISE OPERATIONS (/functions*):
+
+So I'd initially wanted to go through examples of "tidy" pairwise operations from 5 different packages, but I decided to narrow it to 3 -- even then it will be a little bit of a whirlwind and my goal is to just give the smallest taste of each example so that you can go and look them up later, so bear with me, and I'll have references at the end. I'll also be uploading the slides to github this weekend.
+
+# {Data}
+I'll be using the Palmer Penguins Dataset for my examples.
+
+When I talk about pairwise operations, I mean an operation that you *apply to all pairs of a set of vectors.*
+
+Probably the classic example of a pairwise function that comes to mind is the `cor()` function in R. 
+
+# {cor example}
+
+You give it a dataframe, which is just a list of vectors of equal length and it returns the correlation between each of these pairs.
+In this case I'm first just selecting the dimensions columns before passing this into the cor function.
+
+Now if you want a tidy friendly wrapper for calculating correlations, you can use the {corrr} package whose core function is `correlate()`
+
+# {corrr} 
+
+This package is in the tidymodels framework and has some really nice features to it for data processing
+
+# {Show shave}
+
+# {show focus}
+
+As well as for data visualization.
+# {show visualization}
+
+One thing I personally really about this package also is that you can actually run it on a database, which I think is super nifty.
+
+The types of correlation built-in are really nice, but there may also be any number of other types of pairwise operations your interested in running and they have a really nice function built-in called `colpair_map()` that can run an arbitrary function across a pairwise set of inputs. 
+# {colpair_map()}
+
+Say for example you want to extract the p-value checking for significance of each correlation. 
+# {colpair_map() ks statistic}
+Or it can really be anything, in this case I'm just adding the columns together and then taking the average...
+
+# {colpair_map arbitray example}
+Without colpair_map() you'd probably end-up setting things-up with something like the base R combn() function or expand() to set-up a way to create a set of all pairs.
+
+# {summarising vs mutating}
+These have been examples of pairwise summarising functions. *Summarising* because for each pair of vectors you're putting in you're getting out a single value.
+
+There are also cases you may want to build mutating pairwise operations. For example say you think the ratios of a collections of features may be useful to a model or perhaps the ratios may be useful. 
+In this case the {recipes} package -- also in the tidymodels framework has some useful step helpers with`step_ratio()` and step_product()
+# {Example with recipes steps.}
+
+... I am a big fan of both the {corrr} package and the {recipes} package and think they are really helpful for doing pairwise summarising and mutating operations respectively however there are some things that could be handy that they do not have built-in. For example...
+
+{list examples}
+* recipes just supports those two pairwise mutating operations, there's not an easy way to apply arbitrary functions to a pairwise collection of columns
+* corrr doesn't support tidyselection
+* neither supports grouping
+
+{
+* part of dplyr workflow
+* consistent style syntax whether mutating of summarising
+}
+
+The big thing though, is that there are situations you may want to do pairwise operations within a traditional dplyr style workflow... so maybe you don't care *just* about the correlations but that's just one thing you're summarising. 
+Also, in dplyr mutating and summarising functions are handled really consistently, you just 
+
+{Carlo Medina}
+So me and Carlo Medina wrote an experimental package that essentially created a version of dplyr's across but for doing pairwise operations that would facilitate all of these things.
+And it was awesome. When we started sharing it though, I learned
+{dplyover}
+that Tim Tiefenbach had already written a package called dplyover that had this functionality and a lot of other really cool other functionality that essentially created a bunch of across() like functions.
+If you know how to use across() and you find yourself bumping into some weird iteration challenge, I'd really recommend doing a deep-dive into dplyover.
+It's still on github and has some limitations, for example, it's slow on large datasets or if you have *lots of pairs* but for examples that aren't huge and for fast iteration where you're not doing huge amounts of computation i think it's really nice.
+
+OK, so onto a few examples with dplyover.
+
+Let's recreate the summarising example first.
+#{Summarizing}
+{simple example}
+{sophisticated example with grouping}
+{example with renaming}
+
+Now let's do the {mutating} example
+#{Mutating}
+{simple example}
+{sophisticated example with grouping}
+{example with renaming}
+
+OK, so, again, I really recommend checking-out Tim's package dplyover. He also recently put-out a package that converts purrr functions into for() loops, which if you feel comfortable with for loops but not so much with purrr may be another good place to check-out.
+
+
